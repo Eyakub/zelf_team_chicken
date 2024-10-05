@@ -1,7 +1,26 @@
 from rest_framework import serializers
 
-from chickenapi.models import Content, Author
+from chickenapi.models import Content, Author, Tag, Category
 
+
+class TagSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Tag model.
+    """
+    class Meta:
+        model = Tag
+        fields = ['id', 'name', 'description']
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    """
+    Serializer for Category model that includes its related tags.
+    """
+    tags = TagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'description', 'tags']
 
 # For Reading the data from the DB
 class AuthorSerializer(serializers.ModelSerializer):

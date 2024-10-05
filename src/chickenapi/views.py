@@ -7,8 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import F, Q, Sum, Count
 from django.utils import timezone
 
-from chickenapi.models import Content, Author, Tag, ContentTag
-from chickenapi.serializers import ContentSerializer
+from chickenapi.models import Content, Author, Tag, ContentTag, Category
+from chickenapi.serializers import ContentSerializer, CategorySerializer
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -129,3 +129,14 @@ class ContentStatsAPIView(APIView):
         }
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class CategoryListView(APIView):
+    """
+    API View to fetch all categories and their respective tags.
+    """
+    def get(self, request):
+        categories = Category.objects.prefetch_related('tags').all()
+        serializer = CategorySerializer(categories, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
