@@ -1,0 +1,44 @@
+
+services:
+
+  # db:
+  #   image: postgres:14.0-alpine
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./db/data/:/var/lib/postgresql/data/
+  #   environment:
+  #     POSTGRES_DB: zelf_team_chicken_db
+  #     POSTGRES_USER: django
+  #     POSTGRES_PASSWORD: django
+  #   expose:
+  #     - 5432
+
+  # redis:
+  #   restart: on-failure
+  #   image: redis:7.2.1
+  #   expose:
+  #     - 6379
+
+  app:
+    container_name: team_chicken
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: "python src/manage.py runserver 0.0.0.0:8008"
+    ports:
+      - "8008:8008"
+    expose:
+      - 8008
+    # depends_on:
+      # - db
+      # - redis
+    volumes:
+      - type: bind
+        source: ./src
+        target: /src
+    environment:
+      DATABASE_URL: postgres://django:django@192.168.243.130:5432/zelf_team_chicken_db
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: django
+      REDIS_URL: redis://redis:6379/1
